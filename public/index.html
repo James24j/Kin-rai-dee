@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>กินไรดีเพื่อน?</title>
+    <style>
+        body { font-family: 'Kanit', sans-serif; text-align: center; background-color: #f4f4f9; margin: 0; padding: 0; overflow: hidden; }
+        .container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        
+        #card-container { position: relative; width: 300px; height: 400px; margin-top: 20px; }
+        .card { 
+            position: absolute; width: 100%; height: 100%; 
+            background: white; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px; font-weight: bold; color: #333;
+            transition: transform 0.3s ease; user-select: none;
+        }
+        
+        .instructions { color: #888; margin-top: 20px; }
+        input { padding: 15px; font-size: 18px; border-radius: 10px; border: 1px solid #ccc; text-align: center; margin-bottom: 10px; }
+        button { padding: 15px 30px; font-size: 18px; background-color: #ff5a5f; color: white; border: none; border-radius: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="setup">
+        <h1>ปาร์ตี้เด็ก มข.</h1>
+        <p>สร้างหรือใส่รหัสห้องเพื่อเริ่มโหวต</p>
+        <input type="text" id="roomCode" placeholder="เช่น 9999">
+        <button onclick="joinRoom()">เข้าห้องเลย!</button>
+    </div>
+
+    <div class="container" id="game" style="display: none;">
+        <h2>ปัดขวา = กิน 🟢 <br> ปัดซ้าย = เท 🔴</h2>
+        <div id="card-container">
+            </div>
+        <p class="instructions" id="statusText">รอโหลดเมนู...</p>
+    </div>
+
+    <div class="container" id="result" style="display: none;">
+        <h1 id="winnerText">กำลังรอเพื่อนโหวต... ⏳</h1>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let currentRoom = '';
+        let items = [];
+        let currentIndex = 0;
+
+        function joinRoom() {
+            currentRoom = document.getElementById('roomCode').value;
+            if(currentRoom) {
+                socket.emit('joinRoom', currentRoom);
+                document.getElementById('setup').style.display = 'none';
+                document.getElementById('game').style.display = 'flex';
+            }
+        }
+
+        // รับรายการ 10 เมนูจาก Server
+        socket.on('startGame', (serverItems) => {
+            items = serverItems;
+            currentIndex = 0;
+            renderCard();
+        });
+
+        function renderCard() {
+            const container = document.getElementById('card-container');
+            container.innerHTML = ''; // เคลียร์การ์ดเก่า
+
+            if (currentIndex >= items.length) {
+                document.getElementById('game').style.display = 'none';
+                document.getElementById('result').style.display = 'flex';
+                socket.emit('finishVoting', currentRoom);
+                return;
+            }
+
+            document.getElementById('statusText').innerText = `เมนูที่ ${currentIndex + 1} / ${items.length}`;
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerText = items[currentIndex];
+            container.appendChild(card);
+
+            // ระบบปัด (Swipe) ด้วย Touch Events
+            let startX = 0;
+            let currentX = 0;
+
+            card.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                card.style.transition = 'none'; // ปิดแอนิเมชันตอนกำลังลาก
+            });
+
+            card.addEventListener('touchmove', (e) => {
+                currentX = e.touches[0].clientX - startX;
+                // หมุนการ์ดนิดหน่อยตอนลากให้ดูเป็นธรรมชาติ
+                card.style.transform = `translateX(${currentX}px) rotate(${currentX * 0.05}deg)`; 
+            });
+
+            card.addEventListener('touchend', () => {
+                card.style.transition = 'transform 0.3s ease'; // เปิดแอนิเมชันตอนปล่อยนิ้ว
+                
+                if (currentX > 100) {
+                    // ปัดขวา (กิน)
+                    card.style.transform = `translateX(500px) rotate(30deg)`;
+                    socket.emit('swipeRight', { roomCode: currentRoom, item: items[currentIndex] });
+                    setTimeout(nextCard, 300);
+                } else if (currentX < -100) {
+                    // ปัดซ้าย (ไม่กิน)
+                    card.style.transform = `translateX(-500px) rotate(-30deg)`;
+                    setTimeout(nextCard, 300);
+                } else {
+                    // ปัดไม่สุด เด้งกลับมาตรงกลาง
+                    card.style.transform = `translateX(0px) rotate(0deg)`;
+                }
+            });
+        }
+
+        function nextCard() {
+            currentIndex++;
+            renderCard();
+        }
+
+        socket.on('result', (data) => {
+            if(data.maxVotes > 0) {
+                document.getElementById('winnerText').innerHTML = `🎉 มติเอกฉันท์! ไปกิน:<br><br><span style="color:#ff5a5f; font-size:48px;">${data.winner}</span><br><br>คนอยากกิน ${data.maxVotes} คน`;
+            } else {
+                document.getElementById('winnerText').innerHTML = `😅 ไม่มีใครอยากกินอะไรเลย แยกย้าย!`;
+            }
+        });
+    </script>
+</body>
+</html>
