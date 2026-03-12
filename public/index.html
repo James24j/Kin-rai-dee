@@ -6,6 +6,9 @@
     <title>อีสอะไรดีจ้าเพื่อนรัก</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+        }
         /* --- สีพื้นหลังและฟอนต์ --- */
         body {
             font-family: 'Kanit', sans-serif;
@@ -277,11 +280,16 @@
             container.innerHTML = ''; 
 
             if (currentIndex >= items.length) {
-                // รอหน้าโชว์ผลลัพธ์ ไม่ต้องมีปุ่มโชว์ผลแล้ว
                 document.getElementById('game').innerHTML = `
                     <div class="box-ui" style="display: block; margin: auto;">
                         <h2>🛑 ปัดครบแล้ว!</h2>
-                        <p>กำลังรอเพื่อนรักคนอื่นในแก๊งปัดให้เสร็จ...</p>
+                        <p>กำลังรอเพื่อนคนอื่นในแก๊งปัดให้เสร็จ...</p>
+                        
+                        <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
+                        <p style="font-size: 0.9rem; color: #888;">ถ้าเพื่อนรักหาย เน็ตหลุด หรือรอนานเกินไป กดปุ่มด้านล่างเพื่อตัดความสัมพันธ์ได้เลย</p>
+                        <button class="btn-primary" style="background: linear-gradient(135deg, #f39c12, #e67e22); font-size: 1rem; padding: 10px 20px;" onclick="forceEndGame()">
+                            ⚡ บังคับจบเกม (ดูผลทันที)
+                        </button>
                     </div>
                 `;
                 socket.emit('finishVoting', currentRoom);
@@ -404,6 +412,11 @@
                 `;
             } else {
                 document.getElementById('winnerText').innerHTML = `<h2>😅 ไม่มีใครอยากอีสอะไรเลย กลับห้องไปคิดก่อนน้า</h2>`;
+            }
+        }
+        function forceEndGame() {
+            if(confirm("แน่ใจนะว่าจะตัดจบเกมตอนนี้เลย? (เพื่อนที่ยังปัดไม่เสร็จจะอดโหวตต่อนะ)")) {
+                socket.emit('forceEndGame', currentRoom);
             }
         }
     </script>

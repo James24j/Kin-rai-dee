@@ -173,6 +173,28 @@ io.on('connection', (socket) => {
                 if (winnerObj) mapUrl = winnerObj.mapUrl;
             }
             
+            // --- โค้ดสำหรับระบบบังคับจบเกม ---
+    socket.on('forceEndGame', (roomCode) => {
+        if (!rooms[roomCode]) return;
+
+        const votes = rooms[roomCode].votes;
+        let winner = "ไม่มีใครอยากกินอะไรเลย!";
+        let maxVotes = 0;
+        let mapUrl = "";
+        
+        if (Object.keys(votes).length > 0) {
+            // หาเมนูที่ได้คะแนนสูงสุด ณ ตอนนั้น
+            winner = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
+            maxVotes = votes[winner];
+            
+            const winnerObj = rooms[roomCode].items.find(i => i.name === winner);
+            if (winnerObj) mapUrl = winnerObj.mapUrl;
+        }
+        
+        // ส่งผลลัพธ์ให้ทุกคนในห้องทันที โดยไม่ต้องรอคนอื่นปัดเสร็จ
+        io.to(roomCode).emit('result', { winner, maxVotes, mapUrl });
+    });
+
             io.to(roomCode).emit('result', { winner, maxVotes, mapUrl });
         }
     });
