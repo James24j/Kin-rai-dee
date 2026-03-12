@@ -11,7 +11,7 @@ app.use(express.static('public'));
 // แบ่งหมวดหมู่ให้ชัดเจน (rice = ข้าว, noodle = เส้น)
 const allRestaurants = [
     // 🍚 หมวดข้าว
-    { name: "ลาบก้อยซอยนานา สาขาหลังมข.", category: "rice", image: "hhttps://lh3.googleusercontent.com/gps-cs-s/AHVAweomqS94GnUiDGSdcuxfwguWSvszNBdlI6RDyPVGB0Kce2GnVsDRM9YtYjxSMWekVo--3D1PWatgEx7_1ylQbtEL_uDQOO7nd2omEzJhqKP3cgObn0BCQQMIp2kjyOaN3Wq60NYV=w140-h140-p-k-no", mapUrl: "https://maps.app.goo.gl/dtkjuuYrTG7WGVLJ9" },
+    { name: "ลาบก้อยซอยนานา สาขาหลังมข.", category: "rice", image: "https://lh3.googleusercontent.com/gps-cs-s/AHVAweomqS94GnUiDGSdcuxfwguWSvszNBdlI6RDyPVGB0Kce2GnVsDRM9YtYjxSMWekVo--3D1PWatgEx7_1ylQbtEL_uDQOO7nd2omEzJhqKP3cgObn0BCQQMIp2kjyOaN3Wq60NYV=w140-h140-p-k-no", mapUrl: "https://maps.app.goo.gl/dtkjuuYrTG7WGVLJ9" },
     { name: "U-Center", category: "rice", image: "https://lh3.googleusercontent.com/gps-cs-s/AHVAwepMg5R49hUKkfD8ZOL8kSxxXOqcdMjZrk7zyzrCRoFV_o2acDwloK-iwaUBOoN13jKvHBTXsDXXUQKjccK7GvXbJlPA0oizBFvHNKQzC_UPITYafT2cJF0mFLpIho3cSIboR4Ok=w397-h298-k-no", mapUrl: "https://maps.app.goo.gl/S7zv2Dzx641PcPXo6" },
     { name: "ข้าวมันแซ่บ", category: "rice", image: "https://lh3.googleusercontent.com/gps-cs-s/AHVAweq1qNkOuaiQ8yWbCZrZH8aBQLQnbu3YX_mCX6Gl52-W4LiDi5WuKQ9t_5pIXdwBE5kdryUn_MujyP5P3bDYaw0rUhmYUmPmeZTrICAFWhIjAKEmrlMEfwqfY1aynz10rpbSJsoboYMwyjU=w224-h298-k-no", mapUrl: "https://maps.app.goo.gl/P9yAiMa3zVzSx4s37" },
     { name: "ร้านอาหารอิสาน ย่าน ม.ขอนแก่น", category: "rice", image: "https://lh3.googleusercontent.com/gps-cs-s/AHVAwerzMIQIznXT9TISNKL_zN067GY-6RiykUWJT6R_jVEUEu05U3TvhjOsY3PoicdDdWGKwDoneSrU3XXIoEs9B5fAQbYMOEev7TnIE0QkHozti1J5DJ6SBdfQUmj9lMtTLq-_fas-qq6JbVug=w224-h298-k-no", mapUrl: "https://maps.app.goo.gl/Mxj236dtcnyafDbQ8" },
