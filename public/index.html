@@ -112,7 +112,7 @@ h2 {
         let currentCardElement = null;
 
         // สลับหน้าจอ
-        function showScreen(screenId) {
+        function showScreen(screenId){
             document.getElementById('setup').style.display = 'none';
             document.getElementById('category-vote').style.display = 'none';
             document.getElementById('waiting').style.display = 'none';
@@ -242,6 +242,8 @@ h2 {
                 document.getElementById('winnerText').innerHTML = `<h2>😅 ไม่มีใครอยากอีสอะไรเลย กลับห้องไปเล่นไพ่จ้า!</h2>`;
             }
         });
+        // เรียกใช้เพื่อให้หน้าแรกแสดงแค่หน้า setup เท่านั้น
+showScreen('setup');
     </script>
 </body>
 </html>
