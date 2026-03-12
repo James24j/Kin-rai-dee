@@ -6,65 +6,47 @@
     <title>อีสอะไรดีจ้าเพื่อนยาก</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* เปลี่ยนสีพื้นหลังให้ดูสดใสเข้ากับเรื่องของกิน (โทนส้ม-เหลืองอ่อน) */
-body {
-    font-family: 'Kanit', sans-serif;
-    background: linear-gradient(135deg, #fff0dc 0%, #ffdfb9 100%); 
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: #333;
-}
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Kanit', sans-serif; text-align: center; 
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            margin: 0; padding: 0; overflow: hidden; height: 100vh;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
 
-/* อัปเกรดกล่อง UI ให้เป็นทรงการ์ด 3 มิติ ลอยขึ้นมา */
-.box-ui {
-    background: #ffffff;
-    border-radius: 24px;
-    padding: 40px 30px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 
-                0 1px 8px rgba(0, 0, 0, 0.04);
-    text-align: center;
-    transition: transform 0.3s ease;
-}
+        /* กล่อง UI มาตรฐาน */
+        .box-ui { background: white; padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 400px; }
+        h1, h2 { color: #ff5a5f; margin-top: 0; }
+        
+        input { width: 100%; padding: 15px; font-size: 18px; border-radius: 12px; border: 2px solid #eee; text-align: center; margin-bottom: 20px; font-family: 'Kanit', sans-serif; }
+        .btn-primary { width: 100%; padding: 15px; font-size: 18px; font-weight: 600; background: linear-gradient(45deg, #ff5a5f, #ff7e82); color: white; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 90, 95, 0.4); text-decoration: none; display: inline-block; }
 
-/* ทำให้ปุ่มเปิด Google Maps สีสวยสะดุดตา และมีเอฟเฟกต์ตอนชี้เมาส์ */
-button {
-    background: linear-gradient(135deg, #ff6b6b, #ff4757);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    font-family: 'Kanit', sans-serif;
-    font-weight: bold;
-    cursor: pointer;
-    width: 100%;
-    margin-top: 20px;
-    box-shadow: 0 8px 15px rgba(255, 71, 87, 0.3);
-    transition: all 0.3s ease;
-}
+        /* หน้าโหวตหมวดหมู่ */
+        #category-vote { display: none; }
+        .cat-btn { width: 100%; padding: 25px; font-size: 24px; font-weight: bold; border-radius: 15px; margin-bottom: 15px; cursor: pointer; border: none; transition: transform 0.2s; color: white; font-family: 'Kanit', sans-serif;}
+        .cat-btn:active { transform: scale(0.95); }
+        .btn-rice { background: linear-gradient(45deg, #FFB75E, #ED8F03); box-shadow: 0 5px 15px rgba(237, 143, 3, 0.3); }
+        .btn-noodle { background: linear-gradient(45deg, #4facfe, #00f2fe); box-shadow: 0 5px 15px rgba(0, 242, 254, 0.3); }
 
-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 20px rgba(255, 71, 87, 0.4);
-}
+        #waiting { display: none; }
 
-button:active {
-    transform: translateY(1px);
-}
+        /* หน้าปัดการ์ด */
+        #game { width: 100%; height: 100%; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .status-bar { margin-bottom: 20px; font-size: 18px; color: #555; font-weight: 600; background: white; padding: 10px 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
+        #card-container { position: relative; width: 90%; max-width: 380px; height: 60vh; max-height: 550px; perspective: 1000px; }
 
-/* ตกแต่งชื่อร้านให้ตัวใหญ่และโดดเด่น */
-h2 {
-    color: #ff4757;
-    font-size: 2.5rem;
-    margin: 15px 0;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-}
+        .card { position: absolute; width: 100%; height: 100%; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); background-size: cover; background-position: center; transition: transform 0.3s ease; user-select: none; border: 4px solid #fff; overflow: hidden; background-color: #ddd; }
+        .card-title { position: absolute; bottom: 0; width: 100%; padding: 50px 20px 20px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: white; font-size: 32px; font-weight: 600; text-align: left; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+
+        .action-buttons { display: flex; justify-content: center; gap: 30px; margin-top: 30px; width: 100%; }
+        .btn-circle { width: 70px; height: 70px; border-radius: 50%; border: none; font-size: 30px; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; transition: transform 0.2s; background: white; }
+        .btn-circle:active { transform: scale(0.9); }
+        .btn-nope { color: #ff4b4b; }
+        .btn-like { color: #4cdc94; }
+
+        #result { display: none; flex-direction: column; align-items: center; width: 90%; max-width: 400px; }
+        .winner-text { color: #ff5a5f; font-size: 40px; font-weight: bold; margin: 15px 0; }
     </style>
 </head>
 <body>
