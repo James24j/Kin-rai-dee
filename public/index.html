@@ -6,47 +6,178 @@
     <title>อีสอะไรดีจ้าเพื่อนยาก</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; }
-        
-        body { 
-            font-family: 'Kanit', sans-serif; text-align: center; 
-            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-            margin: 0; padding: 0; overflow: hidden; height: 100vh;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        /* --- สีพื้นหลังและฟอนต์ --- */
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #fff0dc 0%, #ffdfb9 100%); 
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            overflow: hidden; /* กันหน้าจอมันเลื่อนตอนปัดไพ่ */
         }
 
-        /* กล่อง UI มาตรฐาน */
-        .box-ui { background: white; padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 400px; }
-        h1, h2 { color: #ff5a5f; margin-top: 0; }
-        
-        input { width: 100%; padding: 15px; font-size: 18px; border-radius: 12px; border: 2px solid #eee; text-align: center; margin-bottom: 20px; font-family: 'Kanit', sans-serif; }
-        .btn-primary { width: 100%; padding: 15px; font-size: 18px; font-weight: 600; background: linear-gradient(45deg, #ff5a5f, #ff7e82); color: white; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 90, 95, 0.4); text-decoration: none; display: inline-block; }
+        /* --- กล่อง UI แบบ Glassmorphism มีมิติ --- */
+        .box-ui {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 40px 30px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            /* แอนิเมชันเด้งดึ๋งตอนโหลดขึ้นมา */
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
 
-        /* หน้าโหวตหมวดหมู่ */
-        #category-vote { display: none; }
-        .cat-btn { width: 100%; padding: 25px; font-size: 24px; font-weight: bold; border-radius: 15px; margin-bottom: 15px; cursor: pointer; border: none; transition: transform 0.2s; color: white; font-family: 'Kanit', sans-serif;}
-        .cat-btn:active { transform: scale(0.95); }
-        .btn-rice { background: linear-gradient(45deg, #FFB75E, #ED8F03); box-shadow: 0 5px 15px rgba(237, 143, 3, 0.3); }
-        .btn-noodle { background: linear-gradient(45deg, #4facfe, #00f2fe); box-shadow: 0 5px 15px rgba(0, 242, 254, 0.3); }
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.8) translateY(30px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
 
-        #waiting { display: none; }
+        /* --- ตกแต่งปุ่มต่างๆ --- */
+        button {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-family: 'Kanit', sans-serif;
+        }
 
-        /* หน้าปัดการ์ด */
-        #game { width: 100%; height: 100%; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .status-bar { margin-bottom: 20px; font-size: 18px; color: #555; font-weight: 600; background: white; padding: 10px 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
-        #card-container { position: relative; width: 90%; max-width: 380px; height: 60vh; max-height: 550px; perspective: 1000px; }
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b, #ff4757);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 8px 15px rgba(255, 71, 87, 0.3);
+        }
 
-        .card { position: absolute; width: 100%; height: 100%; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); background-size: cover; background-position: center; transition: transform 0.3s ease; user-select: none; border: 4px solid #fff; overflow: hidden; background-color: #ddd; }
-        .card-title { position: absolute; bottom: 0; width: 100%; padding: 50px 20px 20px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: white; font-size: 32px; font-weight: 600; text-align: left; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 20px rgba(255, 71, 87, 0.4);
+        }
+        .btn-primary:active { transform: translateY(1px); }
 
-        .action-buttons { display: flex; justify-content: center; gap: 30px; margin-top: 30px; width: 100%; }
-        .btn-circle { width: 70px; height: 70px; border-radius: 50%; border: none; font-size: 30px; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; transition: transform 0.2s; background: white; }
-        .btn-circle:active { transform: scale(0.9); }
-        .btn-nope { color: #ff4b4b; }
-        .btn-like { color: #4cdc94; }
+        .cat-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.3rem;
+            border: none;
+            border-radius: 15px;
+            margin-top: 15px;
+            font-weight: bold;
+            color: white;
+        }
+        .btn-rice { background: linear-gradient(135deg, #f6d365, #fda085); box-shadow: 0 8px 15px rgba(253, 160, 133, 0.3); }
+        .btn-noodle { background: linear-gradient(135deg, #84fab0, #8fd3f4); box-shadow: 0 8px 15px rgba(143, 211, 244, 0.3); color: #333; }
 
-        #result { display: none; flex-direction: column; align-items: center; width: 90%; max-width: 400px; }
-        .winner-text { color: #ff5a5f; font-size: 40px; font-weight: bold; margin: 15px 0; }
+        input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            font-size: 1.1rem;
+            font-family: 'Kanit', sans-serif;
+            box-sizing: border-box;
+            margin-top: 15px;
+            text-align: center;
+        }
+        input:focus { border-color: #ff4757; outline: none; }
+
+        h2 { color: #ff4757; font-size: 2.2rem; margin: 10px 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+
+        /* --- หน้าจอ Game ปัดการ์ด --- */
+        #game {
+            width: 100%;
+            height: 100vh;
+            display: none; /* ซ่อนไว้ก่อน จะกลายเป็น flex ตอนเล่น */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-bar {
+            position: absolute;
+            top: 20px;
+            background: white;
+            padding: 10px 25px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        #card-container {
+            width: 300px;
+            height: 420px;
+            position: relative;
+            margin-top: 20px;
+            perspective: 1000px;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background-color: white;
+            background-size: cover;
+            background-position: center;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: flex-end;
+            overflow: hidden;
+            transform-origin: 50% 100%;
+        }
+
+        .card::after { /* ทำเงาดำๆ ข้างล่างการ์ดให้ตัวหนังสืออ่านง่ายขึ้น */
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0; height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        }
+
+        .card-title {
+            position: relative;
+            z-index: 2;
+            color: white;
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 20px;
+            width: 100%;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+            z-index: 10;
+        }
+
+        .btn-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            font-size: 2rem;
+            border: none;
+            background: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-nope { color: #ff4757; }
+        .btn-like { color: #2ed573; }
+        .btn-circle:hover { transform: scale(1.1); }
     </style>
 </head>
 <body>
@@ -58,19 +189,21 @@
         <button class="btn-primary" onclick="joinRoom()">เข้าห้องเลย!</button>
     </div>
 
-    <div id="category-vote" class="box-ui">
+    <div id="category-vote" class="box-ui" style="display: none;">
         <h2>เลือกแหน่จ้า</h2>
         <p>วันนี้อยากอีสข้าว หรือ สูดเส้น?</p>
         <button class="cat-btn btn-rice" onclick="submitCategoryVote('rice')">🍚 สายข้าว</button>
         <button class="cat-btn btn-noodle" onclick="submitCategoryVote('noodle')">🍜 สายเส้น</button>
     </div>
 
-    <div id="waiting" class="box-ui">
-        <h2>⏳ รอเพื่อนแป๊บนะ มันลีลางี้แหละ...</h2>
-        <p>กำลังรวบรวมเสียงในสภาว่าตกลงจะข้าวหรือเส้น</p>
+    <div id="waiting" class="box-ui" style="display: none;">
+        <div id="waiting-content">
+            <h2>⏳ รอเพื่อนแป๊บนะ...</h2>
+            <p>กำลังรวบรวมเสียงในสภาว่าตกลงจะข้าวหรือเส้น</p>
+        </div>
     </div>
 
-    <div id="game">
+    <div id="game" style="display: none;">
         <div class="status-bar" id="statusText">รอโหลดเมนู...</div>
         <div id="card-container"></div>
         <div class="action-buttons">
@@ -79,9 +212,9 @@
         </div>
     </div>
 
-    <div id="result" class="box-ui">
+    <div id="result" class="box-ui" style="display: none;">
         <div id="winnerText">
-            <h2>กำลังรอเพื่อนโหวต... ⏳</h2>
+            <h2>กำลังประมวลผล... ⏳</h2>
         </div>
     </div>
 
@@ -92,15 +225,14 @@
         let items = [];
         let currentIndex = 0;
         let currentCardElement = null;
+        let pendingGameData = null; // เก็บข้อมูลก่อนเริ่มเกม
+        let pendingResultData = null; // เก็บข้อมูลก่อนโชว์ผล
 
-        // สลับหน้าจอ
+        // ฟังก์ชันสลับหน้าจอ (บังคับซ่อนทุกหน้า แล้วเปิดเฉพาะหน้าที่ระบุ)
         function showScreen(screenId) {
-            document.getElementById('setup').style.display = 'none';
-            document.getElementById('category-vote').style.display = 'none';
-            document.getElementById('waiting').style.display = 'none';
-            document.getElementById('game').style.display = 'none';
-            document.getElementById('result').style.display = 'none';
-            
+            ['setup', 'category-vote', 'waiting', 'game', 'result'].forEach(id => {
+                document.getElementById(id).style.display = 'none';
+            });
             document.getElementById(screenId).style.display = (screenId === 'game') ? 'flex' : 'block';
         }
 
@@ -111,35 +243,55 @@
             }
         }
 
-        // เซิร์ฟเวอร์สั่งให้เริ่มโหวตหมวดหมู่
         socket.on('startCategoryVote', () => {
             showScreen('category-vote');
         });
 
-        // ส่งผลโหวตหมวดหมู่
         function submitCategoryVote(category) {
             socket.emit('voteCategory', { roomCode: currentRoom, category: category });
-            showScreen('waiting'); // เปลี่ยนไปหน้ารอเพื่อน
+            showScreen('waiting'); 
         }
 
-        // เซิร์ฟเวอร์ได้มติแล้ว ส่งเมนูมาให้เริ่มปัดการ์ด
+        // ==========================================
+        // 🛑 เพิ่มระบบต้องกดปุ่มก่อนเข้าหน้าเกม
+        // ==========================================
         socket.on('startGame', (data) => {
-            items = data.items;
+            pendingGameData = data; 
             const categoryName = data.category === 'rice' ? 'ข้าว 🍚' : 'เส้น 🍜';
+            
+            // อัปเดตหน้า waiting ให้มีปุ่มกดเริ่มเกม
+            document.getElementById('waiting-content').innerHTML = `
+                <h2>🎉 ผลโหวตออกแล้ว!</h2>
+                <p>สภาลงมติให้ไปอีส: <b>หมวด${categoryName}</b></p>
+                <button class="btn-primary" onclick="enterGame()">เริ่มปัดการ์ดหาของกิน 🚀</button>
+            `;
+        });
+
+        function enterGame() {
+            items = pendingGameData.items;
+            const categoryName = pendingGameData.category === 'rice' ? 'ข้าว 🍚' : 'เส้น 🍜';
             currentIndex = 0;
             
             showScreen('game');
-            // เปลี่ยนข้อความบอกว่ากำลังโหวตหมวดไหนอยู่
             document.getElementById('statusText').innerText = `รอบชิง: หมวด${categoryName}`;
-            setTimeout(renderCard, 500); // ดีเลย์นิดนึงให้ UI เตรียมตัว
-        });
+            setTimeout(renderCard, 100); 
+        }
 
         function renderCard() {
             const container = document.getElementById('card-container');
             container.innerHTML = ''; 
 
             if (currentIndex >= items.length) {
-                showScreen('result');
+                // ==========================================
+                // 🛑 เมื่อปัดครบ เปลี่ยนหน้าเกมเป็นหน้าจอรอผล
+                // ==========================================
+                document.getElementById('game').innerHTML = `
+                    <div class="box-ui" style="display: block; margin: auto;">
+                        <h2>🛑 ปัดครบแล้ว!</h2>
+                        <p>กำลังรอเพื่อนคนอื่นปัดให้เสร็จ...</p>
+                        <div id="readyResultBtn"></div>
+                    </div>
+                `;
                 socket.emit('finishVoting', currentRoom);
                 return;
             }
@@ -204,26 +356,45 @@
             currentIndex++;
             renderCard();
             if(currentIndex < items.length) {
-                // อัปเดตบอกจำนวนข้อ
                 const catText = document.getElementById('statusText').innerText.split('(')[0];
                 document.getElementById('statusText').innerText = `${catText} (${currentIndex + 1}/${items.length})`;
             }
         }
 
+        // ==========================================
+        // 🛑 เพิ่มระบบต้องกดปุ่มก่อนดูผลลัพธ์
+        // ==========================================
         socket.on('result', (data) => {
+            pendingResultData = data;
+            
+            const btnContainer = document.getElementById('readyResultBtn');
+            if(btnContainer) {
+                btnContainer.innerHTML = `
+                    <button class="btn-primary" style="background: linear-gradient(135deg, #2ed573, #2bad5f);" onclick="showFinalResult()">
+                        ดูผลโหวตเลย 🏆
+                    </button>
+                `;
+            } else {
+                showFinalResult();
+            }
+        });
+
+        function showFinalResult() {
+            showScreen('result');
+            const data = pendingResultData;
             if(data.maxVotes > 0) {
                 document.getElementById('winnerText').innerHTML = `
                     <h2 style="color:#555;">🎉 กกต.เคาะแล้ว! ไปอีส:</h2>
-                    <div class="winner-text">${data.winner}</div>
+                    <div style="font-size: 2.2rem; font-weight: bold; color: #ff6b6b; margin: 20px 0; word-wrap: break-word;">${data.winner}</div>
                     <p style="color:#888; margin-bottom: 25px;">(มีคนอยากกิน ${data.maxVotes} คน)</p>
-                    <a href="${data.mapUrl}" target="_blank" class="btn-primary" style="margin-top: 10px;">
+                    <a href="${data.mapUrl}" target="_blank" class="btn-primary" style="margin-top: 10px; display: inline-block; text-decoration: none;">
                         📍 เปิด Google Maps นำทาง
                     </a>
                 `;
             } else {
-                document.getElementById('winnerText').innerHTML = `<h2>😅 ไม่มีใครอยากอีสอะไรเลย กลับห้องไปเล่นไพ่จ้า!</h2>`;
+                document.getElementById('winnerText').innerHTML = `<h2>😅 ไม่มีใครอยากอีสอะไรเลย แยกย้าย!</h2>`;
             }
-        });
+        }
     </script>
 </body>
 </html>

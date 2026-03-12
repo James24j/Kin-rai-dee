@@ -138,7 +138,7 @@ io.on('connection', (socket) => {
             
             // กรองเมนู เอาเฉพาะหมวดที่ชนะ แล้วสุ่มมา 5 เมนู
             const filteredItems = allRestaurants.filter(item => item.category === winningCategory);
-            const selectedItems = getRandomItems(filteredItems); 
+            const selectedItems = getRandomItems(filteredItems, 12); 
             
             rooms[roomCode].items = selectedItems;
             
