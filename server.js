@@ -136,9 +136,9 @@ io.on('connection', (socket) => {
             // หาหมวดหมู่ที่ชนะ (ถ้าเสมอกัน ให้ข้าวชนะไปก่อน)
             const winningCategory = votes.rice >= votes.noodle ? "rice" : "noodle";
             
-            // กรองเมนู เอาเฉพาะหมวดที่ชนะ แล้วสุ่ม
+            // กรองเมนู เอาเฉพาะหมวดที่ชนะ แล้วสุ่มมา 5 เมนู
             const filteredItems = allRestaurants.filter(item => item.category === winningCategory);
-            const selectedItems = getRandomItems(filteredItems); 
+            const selectedItems = getRandomItems(filteredItems, 10); 
             
             rooms[roomCode].items = selectedItems;
             
