@@ -73,7 +73,6 @@ const allRestaurants = [
     { name: "ขนมจีนโคตรข้น สาขา มข.", category: "noodle", image: "https://lh3.googleusercontent.com/gps-cs-s/AHVAweqlLCFKP-sBpvMc-VL8x53IV3gieL-xrzuF1otE-9IrQhlzy4qTtgokXX3M2bNPQb2eYBzwsP4FWb1xVLgAGfehuoI37RmY654P3AdX2z3QmrlKAZui3oGF9pzGFcNejSlpaf8=w140-h140-p-k-no", mapUrl: "https://maps.app.goo.gl/fN6BrQwb8AHCQVeJ7" },
     { name: "ก๋วยเตี๋ยวเรืออนุสาวรีย์ชัย หลังมข.", category: "noodle", image: "https://lh3.googleusercontent.com/gps-cs-s/AHVAwertUWRHMsRulAXghm_0c-ijbOiqMbukBaP6JIrnHeSIGGsaF9Wx8Wm9243xgUMkyJ1gJPCVEpnmp9z5sQH6tfckvklpnVKOW_Xr6u60jioK3BlFK7CTr7iXhIMCSwYTJfqTI2LQ=w140-h140-p-k-no", mapUrl: "https://maps.app.goo.gl/AL1ZB2DMJqG2g6Q66" },
     { name: "จิ๊กโก๋ 'เตี๋ยวเรือวังหลัง", category: "noodle", image: "https://lh3.googleusercontent.com/gps-cs-s/AHVAweqIsXvL6FJqfcR1FH8pWGMRYnspyPRPBWYpiUlhXZCs6MSV6cSmigrNu7rLxlRq6F48AbASJpdpO-nkg-mjIAqVX2c8GuTjXVcwBztyOTLFuXj68GAJkiO2TMsNq7V6gQg6iRVadA=w140-h140-p-k-no", mapUrl: "https://maps.app.goo.gl/tjasp3HDFFFXKCFe9" },
-    { name: "เหลนก๋ง บะหมี่&เตี๋ยวเรือ สาขาขอนแก่น", category: "noodle", image: "https://lh3.googleusercontent.com/gps-cs-s/AHVAweqG8VWM7wCmIZ4T_wzYLjBuMxfAJtOjEZlXx3umFNW25xsaYyxoajlPacaG5xDRisERf61gAWi4wM-J23izO0gki_lvyds2tAEWMZcxXA8S7h2B88TQ_5EZ53I8Psiv65Q7P_lk=w140-h140-p-k-no", mapUrl: "https://maps.app.goo.gl/ih7E6S9MirMsEJmr8" },
     { name: "แซ่บดาดปาก", category: "noodle", image: "https://lh3.googleusercontent.com/gps-cs-s/AHVAweqWE868Ye3zkhcVrjTjLPelDTk4Fd9IJbnGs1Iz8sKg5brjOhID9vDLLu2x8aCp5bdQIBF7fWTub_McIz4W4a46gHTjYw6ElIx_C9uDk8yVG4K95GzSZfI4UD6SRX693fiveCZVRw=w140-h140-p-k-no", mapUrl: "https://maps.app.goo.gl/3M2v3FdcN4WdzNXw9" },
     { name: "ฟู่หยวนหม่าล่าเสฉวน", category: "noodle", image: "https://lh3.googleusercontent.com/gps-cs-s/AHVAwep0hwhNnUABk7QL6W8B0PWnwp7rE0SfeMX8Pm0iXDC1ygG4mNufByGCb1-og_JpqEDEHzSBs1RmVMCsQuBAHO1noNt-rJyRBli27qSbwFk86V_Je527XgX1CLdZ8HMu7CNWXCKIqV-bd2FV=w224-h298-k-no", mapUrl: "https://maps.app.goo.gl/2VpWVqg62fhVwcYv7" },
     { name: "หม่าล่าปีศาจ", category: "noodle", image: "https://lh3.googleusercontent.com/gps-cs-s/AHVAweqm2U0QuZbMo-llKxXP11BEQpiZnZ9vHVPxjoIhr-6s7m_qaC3yUQ2R9jy20ZKdlxDbhClEB0RhlMki3HpwS52yRJsA5EcAd1O2_fngQ9dmpr4CmlSsI2I60fIvj5ycMH6jo5E2=w140-h140-p-k-no", mapUrl: "https://maps.app.goo.gl/KE3rMzuzKfWQ4vmw7" },
@@ -108,7 +107,6 @@ io.on('connection', (socket) => {
         socket.join(roomCode);
         
         if (!rooms[roomCode]) {
-            // เพิ่มการเก็บสถานะโหวตหมวดหมู่ (categoryVotes)
             rooms[roomCode] = { 
                 users: 0, 
                 categoryVotes: { rice: 0, noodle: 0 }, 
@@ -120,30 +118,28 @@ io.on('connection', (socket) => {
         }
         
         rooms[roomCode].users++;
-        // ส่งหน้าโหวตหมวดหมู่ไปให้คนที่เพิ่งเข้าห้อง
         socket.emit('startCategoryVote');
+
+        // ✨ อัปเดตบอกจำนวนคนในห้องให้ทุกคนรู้ทันทีที่มีคนเข้ามา
+        io.to(roomCode).emit('updateUserCount', rooms[roomCode].users);
     });
 
-    // รับผลโหวตหมวดหมู่ (ข้าว หรือ เส้น)
     socket.on('voteCategory', ({ roomCode, category }) => {
         if (!rooms[roomCode]) return;
         
         rooms[roomCode].categoryVotes[category]++;
         rooms[roomCode].categoryFinishedUsers++;
 
-        // ถาทุกคนโหวตหมวดหมู่ครบแล้ว
         if (rooms[roomCode].categoryFinishedUsers === rooms[roomCode].users) {
             const votes = rooms[roomCode].categoryVotes;
-            // หาหมวดหมู่ที่ชนะ (ถ้าเสมอกัน ให้ข้าวชนะไปก่อน)
             const winningCategory = votes.rice >= votes.noodle ? "rice" : "noodle";
             
-            // กรองเมนู เอาเฉพาะหมวดที่ชนะ แล้วสุ่มมา 5 เมนู
+            // ✨ แก้บั๊ก: เติมเลข 5 เพื่อให้สุ่มแค่ 15 ร้าน (จะได้ไม่ต้องปัดจนนิ้วล็อค)
             const filteredItems = allRestaurants.filter(item => item.category === winningCategory);
-            const selectedItems = getRandomItems(filteredItems, 12); 
+            const selectedItems = getRandomItems(filteredItems, 15); 
             
             rooms[roomCode].items = selectedItems;
             
-            // ส่งเมนูที่เข้ารอบไปให้ทุกคนเริ่มปัดการ์ด
             io.to(roomCode).emit('startGame', { category: winningCategory, items: selectedItems });
         }
     });
@@ -173,7 +169,11 @@ io.on('connection', (socket) => {
                 if (winnerObj) mapUrl = winnerObj.mapUrl;
             }
             
-            // --- โค้ดสำหรับระบบบังคับจบเกม ---
+            io.to(roomCode).emit('result', { winner, maxVotes, mapUrl });
+        }
+    });
+
+    // ✨ โค้ดสำหรับระบบบังคับจบเกมที่หายไป!
     socket.on('forceEndGame', (roomCode) => {
         if (!rooms[roomCode]) return;
 
@@ -183,7 +183,6 @@ io.on('connection', (socket) => {
         let mapUrl = "";
         
         if (Object.keys(votes).length > 0) {
-            // หาเมนูที่ได้คะแนนสูงสุด ณ ตอนนั้น
             winner = Object.keys(votes).reduce((a, b) => votes[a] > votes[b] ? a : b);
             maxVotes = votes[winner];
             
@@ -191,17 +190,11 @@ io.on('connection', (socket) => {
             if (winnerObj) mapUrl = winnerObj.mapUrl;
         }
         
-        // ส่งผลลัพธ์ให้ทุกคนในห้องทันที โดยไม่ต้องรอคนอื่นปัดเสร็จ
         io.to(roomCode).emit('result', { winner, maxVotes, mapUrl });
-    });
-
-            io.to(roomCode).emit('result', { winner, maxVotes, mapUrl });
-        }
     });
 });
 
 const port = process.env.PORT || 3000;
-// เพิ่ม '0.0.0.0' เข้าไป เพื่อให้ Render เชื่อมต่อได้ชัวร์ๆ
 server.listen(port, '0.0.0.0', () => {
     console.log(`Server is running on port ${port}`);
 });

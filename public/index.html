@@ -194,6 +194,7 @@
 
     <div id="category-vote" class="box-ui" style="display: none;">
         <h2>เลือกสิ</h2>
+        <p style="color: #888; margin-top: -5px; font-weight: bold;">👥 คนในห้อง: <span class="user-count" style="color: #ff4757;">1</span> คน</p>
         <p>วันนี้อยากอีสข้าว หรือ สูดเส้น?</p>
         <button class="cat-btn btn-rice" onclick="submitCategoryVote('rice')">🍚 อีสข้าว</button>
         <button class="cat-btn btn-noodle" onclick="submitCategoryVote('noodle')">🍜 อีสเส้น</button>
@@ -282,6 +283,7 @@
             if (currentIndex >= items.length) {
                 document.getElementById('game').innerHTML = `
                     <div class="box-ui" style="display: block; margin: auto;">
+                        <img src="https://www.flaticon.com/free-icons/ramen" alt="Logo" style="width: 120px; margin-bottom: 15px; drop-shadow(2px 4px 6px rgba(0,0,0,0.1));">
                         <h2>🛑 ปัดครบแล้ว!</h2>
                         <p>กำลังรอเพื่อนคนอื่นในแก๊งปัดให้เสร็จ...</p>
                         
@@ -419,6 +421,11 @@
                 socket.emit('forceEndGame', currentRoom);
             }
         }
+        // รับตัวเลขจำนวนคนอัปเดตจากเซิร์ฟเวอร์
+        socket.on('updateUserCount', (count) => {
+            const countElements = document.querySelectorAll('.user-count');
+            countElements.forEach(el => el.innerText = count);
+        });
     </script>
 </body>
 </html>
