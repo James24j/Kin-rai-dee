@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>อีสอะไรดีจ้าเพื่อนรัก</title>
+    <link rel="icon" type="image/png" href="https://www.flaticon.com/free-icon/noodles_6007085">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -225,6 +226,13 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
+
+        // 🎵 โหลดไฟล์เสียงเตรียมไว้เลย!
+        const soundJoin = new Audio('https://actions.google.com/sounds/v1/cartoon/pop.ogg'); 
+        const soundSwipeLike = new Audio('https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg'); 
+        const soundSwipeNope = new Audio('https://actions.google.com/sounds/v1/cartoon/slide_whistle.ogg'); 
+        const soundResult = new Audio('tinder.mp3');
+
         let currentRoom = '';
         let items = [];
         let currentIndex = 0;
@@ -242,6 +250,11 @@
         function joinRoom() {
             currentRoom = document.getElementById('roomCode').value;
             if(currentRoom) {
+
+            // 🎵 สั่งเล่นเสียงป๊อปตอนกดเข้าห้อง
+                soundJoin.currentTime = 0;
+                soundJoin.play();
+
                 socket.emit('joinRoom', currentRoom);
             }
         }
@@ -283,7 +296,6 @@
             if (currentIndex >= items.length) {
                 document.getElementById('game').innerHTML = `
                     <div class="box-ui" style="display: block; margin: auto;">
-                        <img src="https://www.flaticon.com/free-icons/ramen" alt="Logo" style="width: 120px; margin-bottom: 15px; drop-shadow(2px 4px 6px rgba(0,0,0,0.1));">
                         <h2>🛑 ปัดครบแล้ว!</h2>
                         <p>กำลังรอเพื่อนคนอื่นในแก๊งปัดให้เสร็จ...</p>
                         
@@ -373,9 +385,17 @@
             if(!currentCardElement) return;
             
             if (direction === 'right') {
+                // 🎵 สั่งเล่นเสียงปัดขวา (Like)
+                soundSwipeLike.currentTime = 0;
+                soundSwipeLike.play();
+
                 currentCardElement.style.transform = `translateX(500px) rotate(30deg)`;
                 socket.emit('swipeRight', { roomCode: currentRoom, item: items[currentIndex] });
             } else {
+                // 🎵 สั่งเล่นเสียงปัดซ้าย (Nope)
+                soundSwipeNope.currentTime = 0;
+                soundSwipeNope.play();
+
                 currentCardElement.style.transform = `translateX(-500px) rotate(-30deg)`;
             }
             
@@ -401,6 +421,9 @@
         });
 
         function showFinalResult() {
+            // 🎵 สั่งเล่นเสียงคนเฮ ตอนประกาศผล!
+            soundResult.currentTime = 0;
+            soundResult.play();
             showScreen('result');
             const data = pendingResultData;
             if(data.maxVotes > 0) {
